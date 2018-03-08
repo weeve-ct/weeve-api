@@ -5,7 +5,7 @@ WORKDIR /app
 COPY requirements.txt ./
 RUN pip install --no-cache-dir -r requirements.txt
 
-ENV FUNNEL_API_CONFIG "/secrets/api-config.yaml"
+ENV FUNNEL_API_CONFIG "/secrets/server-config.yaml"
 
 ## Copy app files
 COPY server ./server
