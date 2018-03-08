@@ -7,6 +7,7 @@ case "$1" in
         --volume=$HOME/neo4j/data:/data \
         --volume=$HOME/neo4j/logs:/logs \
         --env=NEO4J_dbms_security_auth__enabled=false \
+        --env=NEO4J_AUTH='neo4j/password' \
         neo4j:3.3
     ;;
   delete)
