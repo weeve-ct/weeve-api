@@ -1,3 +1,4 @@
+#!/usr/bin/env python
 import argparse
 import os
 import server
@@ -13,11 +14,12 @@ def cli():
 
     args = p.parse_args()
 
+    # setup environment
     if args.config:
         assert os.path.exists(args.config), 'bad config fp "{}"'.format(args.config)
     else:
-        args.config = './local/config.yaml'
-        
+        args.config = './local/server-config-dev.yaml'
+
     os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
 
     if args.reset:
