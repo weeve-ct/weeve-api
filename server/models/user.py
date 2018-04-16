@@ -1,17 +1,29 @@
-from py2neo import Node, Relationship
-from .node import Node
+import bcrypt, datetime
+from server.models import db
 
-class User(Node):
-    def __init__(self, name):
-        self.name = name
-        self.username=""
-        self.password=""
-        self.myDict={"username":self.username,"password":self.password}
-        self.node=Node("User", name=self.name)
-        self.node.update(self.myDict)
+class User(db.Model):
+    __tablename__ = 'USERS'
+    id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    username = db.Column(db.String(30), primary_key=False, unique=True, nullable=False)
+    hashed_password = db.Column(db.String(64), nullable=False)
+    is_verified = db.Column(db.Boolean, nullable=False, default=False)
+    last_login_date = db.Column(db.DateTime, nullable=True)
+    minimum_iat = db.Column(db.Numeric, nullable=False)
 
-    def setUsername(self,userName):
-        self.node.update(self.myDict)
+    # posts = db.relationship('Post')
 
-    def setPassword(self,password):
-        self.password=password
+    def set_password(self, password):
+        '''hash via bcrypt and persist to user'''
+
+        self.hashed_password = bcrypt.hashpw(
+            password=password.encode('utf-8'),
+            salt=bcrypt.gensalt()
+        )
+
+    def check_password(self, password):
+        '''check password against hashed user pwd using bcrypt'''
+
+        return bcrypt.checkpw(
+            password=password.encode('utf-8'),
+            hashed_password=self.hashed_password
+        )

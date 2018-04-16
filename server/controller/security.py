@@ -5,7 +5,7 @@ from functools import wraps
 from itsdangerous import URLSafeSerializer
 from flask import current_app, Blueprint, request, g
 from server.controller import errors
-# from server.models import db, User
+from server.models import db, User
 
 logger = logging.getLogger(__name__)
 
