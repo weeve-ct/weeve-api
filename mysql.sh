@@ -8,21 +8,7 @@ DB_TAG_NAME=gcr.io/$PROJECT_ID/$API_IMG_NAME:latest
 DB_CONTAINER_NAME=some-genie-db
 
 case "$1" in
-  build)
-    echo "building"
-    docker build -t $DB_IMG_NAME -f $DOCKER_FOLDER/local_mysql.dockerfile .
-
-    if [[ ! -z $(docker images -f "dangling=true" -q) ]]
-    then
-      echo "Deleting dangling images"
-      docker rmi $(docker images -f "dangling=true" -q)
-    fi
-    ;;
-
   clean)
-    docker kill $(docker ps -aq)
-    docker rm $(docker ps -aq)
-
     if [[ ! -z $(docker images -f "dangling=true" -q) ]]
     then
       echo "Deleting dangling images"
@@ -30,7 +16,9 @@ case "$1" in
     fi
     ;;
 
-  create)
+  build)
+    echo "building image"
+    docker build -t $DB_IMG_NAME -f $DOCKER_FOLDER/local_mysql.dockerfile .
     echo "creating container"
     docker create -p 3306:3306 --name=$DB_CONTAINER_NAME $DB_IMG_NAME
     ;;
@@ -46,8 +34,11 @@ case "$1" in
     ;;
 
   delete)
-    echo "deleting"
+    echo "deleting container"
+  docker kill $DB_CONTAINER_NAME
     docker rm $DB_CONTAINER_NAME
+    echo "deleting image"
+    docker rmi $DB_IMG_NAME
     ;;
 
 
