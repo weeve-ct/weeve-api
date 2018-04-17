@@ -1,13 +1,14 @@
 from flask import jsonify, Blueprint, request, current_app
 import time
 import socket
+from server.controller import helpers
 
 bp = Blueprint('health', __name__)
 
-@bp.route('/', methods=['GET', 'POST'])
+@bp.route('/', methods=['GET'])
 def healthcheck():
     return jsonify({
         'code':'alive',
         'host': socket.gethostname(),
-        'uptime': round(time.time() - current_app.config['APP_START_TIME'],2)
+        'uptime': round(helpers.get_uptime(),2)
     })

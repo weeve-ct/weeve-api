@@ -1,8 +1,10 @@
-import flask
+from flask import current_app
+from flask.json import JSONEncoder
 import decimal, datetime, json
+import time
 from server.controller import errors
 
-class JSONEncoder(flask.json.JSONEncoder):
+class JSONEncoder(JSONEncoder):
     def default(self, obj):
         if isinstance(obj, decimal.Decimal):
             # Convert decimal instances to floats
@@ -22,3 +24,6 @@ def make_boolean(value):
             return value == 'true'
 
     raise errors.ValidationError('could not parse boolean "{}"'.format(value))
+
+def get_uptime():
+    return time.time() - current_app.config['APP_START_TIME']
