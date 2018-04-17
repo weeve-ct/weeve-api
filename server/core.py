@@ -8,7 +8,6 @@ from .controller import routes, helpers, errors
 
 logger = logging.getLogger(__name__)
 
-
 def create_app(debug=False, raise_errors=False):
     app = Flask(__name__)
 
@@ -84,5 +83,7 @@ def create_tables():
 def reset_db():
     app = create_app()
     with app.app_context():
+        logger.info('dropping tables')
         db.drop_all()
+        logger.info('creating tables')
         db.create_all()
