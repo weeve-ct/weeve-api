@@ -35,7 +35,7 @@ case "$1" in
 
   delete)
     echo "deleting container"
-  docker kill $DB_CONTAINER_NAME
+    docker kill $DB_CONTAINER_NAME
     docker rm $DB_CONTAINER_NAME
     echo "deleting image"
     docker rmi $DB_IMG_NAME
