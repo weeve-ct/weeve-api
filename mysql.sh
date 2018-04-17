@@ -1,16 +1,11 @@
 #!/bin/sh
-IMG_NAME=sugah_dadeez_api
-
-
-#!/bin/sh
-
-IMG_NAME=funnel-api
 VERSION=v0.7
 TAG_NAME=gcr.io/$PROJECT_ID/$IMG_NAME:$VERSION
 DOCKER_FOLDER=./docker
 
 DB_IMG_NAME=genie-db
 DB_TAG_NAME=gcr.io/$PROJECT_ID/$API_IMG_NAME:latest
+DB_CONTAINER_NAME=some-genie-db
 
 case "$1" in
   build)
@@ -35,15 +30,24 @@ case "$1" in
     fi
     ;;
 
+  create)
+    echo "creating container"
+    docker create -p 3306:3306 --name=$DB_CONTAINER_NAME $DB_IMG_NAME
+    ;;
+
   start)
-    echo "starting"
-    docker run --detach --name=genie-db -p 3306:3306 $DB_IMG_NAME
+    echo "starting container"
+    docker start $DB_CONTAINER_NAME
     ;;
 
   stop)
-    echo "stopping"
-    docker kill genie-db
-    docker rm genie-db
+    echo "stopping container"
+    docker stop $DB_CONTAINER_NAME
+    ;;
+
+  delete)
+    echo "deleting"
+    docker rm $DB_CONTAINER_NAME
     ;;
 
 
