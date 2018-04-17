@@ -2,7 +2,7 @@ import bcrypt, datetime
 from server.models import db
 
 class User(db.Model):
-    __tablename__ = 'USERS'
+    __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     username = db.Column(db.String(30), primary_key=False, unique=True, nullable=False)
     hashed_password = db.Column(db.String(64), nullable=False)
