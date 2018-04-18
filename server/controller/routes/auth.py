@@ -1,22 +1,14 @@
 import re
 import datetime
+import time
 from urllib.parse import urljoin
 from flask import jsonify, Blueprint, url_for, current_app, request, g
 from server.controller import security, errors
-# from server.models import db, User
+from server.models import db, User
 from flask import logging
 
 bp = Blueprint('auth', __name__)
 logger = logging.getLogger(__name__)
-
-@bp.route('/check_token')
-@security.requires_auth
-def check_token():
-    return jsonify({
-        'token': g.current_token,
-        'token_info': g.current_token_info,
-        'user': g.current_user.username,
-    })
 
 @bp.route('/login', methods=['POST'])
 def login():
@@ -31,7 +23,7 @@ def login():
 
     errors.AuthError.raise_assert(u is not None) # check user exists
     errors.AuthError.raise_assert(u.check_password(body['password'])) # check password
-    errors.AuthError.raise_assert(u.is_verified, 'user not verified') # check verified
+    # errors.AuthError.raise_assert(u.is_verified, 'user not verified') # check verified
 
     u.last_login_date = datetime.datetime.now()
     db.session.add(u)
@@ -56,35 +48,19 @@ def signup():
     u = db.session.query(User).filter_by(username=body['username']).first()
 
     if not u is None:
-        return jsonify({'code': 'OTHER ERROR'})
         raise errors.AuthError('user already exists')
 
     u = User(
-        username=body['username'],
-        is_verified=body.get('is_verified', False),
-        is_driver=body.get('is_driver', False),
-        minimum_iat=datetime.datetime.now().timestamp(),
+        username = body['username'],
+        display_name = (body.get('display_name') or body['username'])
     )
+
     u.set_password(body['password'])
 
     db.session.add(u)
     db.session.commit()
 
-    if not u.is_verified:
-        return jsonify({'code': 'SENDING VER'})
-        url = u.send_verification()
-
     return jsonify({'code': 'success'})
-
-@bp.route('/send-verification/<username>', methods=['POST'])
-def provision(username):
-
-    u = db.session.query(User).filter_by(username=username).first()
-    errors.AuthError.raise_assert(u is not None) # check user exists
-    errors.AuthError.raise_assert(not u.is_verified, 'user already verified')
-    url = u.send_verification()
-
-    return jsonify({'message': 'success'})
 
 @bp.route('/verify/<token>', methods=['GET', 'POST'])
 def verify(token):
@@ -104,3 +80,13 @@ def verify(token):
     db.session.commit()
 
     return jsonify({'message': 'success'})
+
+@bp.route('/check_token')
+@security.requires_auth
+def check_token():
+    '''check token sent as a auth header'''
+    return jsonify({
+        'token': g.current_token,
+        'token_info': g.current_token_info,
+        'user': g.current_user.username,
+    })
