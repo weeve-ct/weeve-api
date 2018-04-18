@@ -6,7 +6,7 @@ from server.controller.errors import ValidationError, QueryError
 bp = SecureBlueprint('team', __name__)
 
 @bp.route('/', methods=['GET'])
-@bp.route('/<id>', methods=['GET'])
+@bp.route('/<team_id>', methods=['GET'])
 def get_team(team_id=None):
     # get all teams
     if team_id is None:
