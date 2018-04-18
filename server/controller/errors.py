@@ -159,3 +159,12 @@ class ValidationError(APIError):
 
     def __init__(self, message=None, status_code=None, payload=None):
         super().__init__(message, status_code, payload)
+
+class NotImplementedError(APIError):
+    '''error class for not implemented'''
+    status_code = 400
+    message = 'not implemented'
+    error_code = 'not_implemented_error'
+
+    def __init__(self, message=None, status_code=None, payload=None):
+        super().__init__(message, status_code, payload)
