@@ -50,6 +50,6 @@ def create_tag():
 
     db.session.add(tag)
     db.session.commit()
-    logger.debug('created tag {}'.format(tag.tag))
+    logger.debug('created tag "{}"'.format(tag.tag))
 
     return jsonify({'tag': {'tag_id': tag.id, 'tag': tag.tag}}), 201
