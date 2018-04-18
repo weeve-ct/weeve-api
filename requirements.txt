@@ -8,10 +8,10 @@ Flask-SQLAlchemy==2.3.2
 idna==2.6
 itsdangerous==0.24
 Jinja2==2.10
-jwt==0.5.3
 MarkupSafe==1.0
 pyaml==17.12.1
 pycparser==2.18
+PyJWT==1.6.1
 PyMySQL==0.8.0
 PyYAML==3.12
 six==1.11.0
