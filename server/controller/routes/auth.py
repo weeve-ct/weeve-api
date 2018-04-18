@@ -15,6 +15,7 @@ def login():
     logger.info('logging in')
 
     body = request.json
+    assert body is not None, 'json missing'
 
     if 'username' not in body or 'password' not in body:
         raise errors.APIError('username and password required')

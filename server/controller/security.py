@@ -59,7 +59,7 @@ def set_token_user():
     username = token_info['username']
     u = db.session.query(User).filter_by(username=username).first()
     errors.AuthError.raise_assert(u is not None, 'user not found')
-    errors.AuthError.raise_assert(u.is_verified, 'user not verified')
+    # errors.AuthError.raise_assert(u.is_verified, 'user not verified')
 
     # check if jwt issued time is valid
     # can use this to invalidate old tokens that haven't expired yet
