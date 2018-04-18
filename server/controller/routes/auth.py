@@ -33,7 +33,7 @@ def login():
     # return session jwt
     token = security.make_expiring_jwt(
         payload={'username': u.username},
-        exp=3600,
+        exp=current_app.config['AUTH_TOKEN_EXP'],
     )
 
     return jsonify({'token': token})
