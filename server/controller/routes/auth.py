@@ -36,7 +36,7 @@ def login():
         exp=current_app.config['AUTH_TOKEN_EXP'],
     )
 
-    return jsonify({'token': token})
+    return jsonify({'token': token}), 201
 
 @bp.route('/signup', methods=['POST'])
 def signup():
