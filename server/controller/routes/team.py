@@ -25,9 +25,7 @@ def get_team(team_id=None):
     # get single team
     else:
         team = db.session.query(Team).filter_by(id=team_id).first()
-
-        if team is None:
-            raise QueryError('team <{}> not found'.format(team_id))
+        raise QueryError.raise_assert(team is Not None, 'team <{}> not found'.format(team_id))
 
         return jsonify(
             {
