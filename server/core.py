@@ -35,6 +35,7 @@ def create_app(debug=False, raise_errors=False):
     # register blueprints
     app.register_blueprint(routes.health_check.bp, url_prefix='')
     app.register_blueprint(routes.auth.bp, url_prefix='/auth')
+    app.register_blueprint(routes.team.bp, url_prefix='/team')
 
     return app
 
