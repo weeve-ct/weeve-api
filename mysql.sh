@@ -43,7 +43,7 @@ case "$1" in
 
 
   *)
-    echo "Usage: "$1" {build|push}"
+    echo "Usage: "$1" {build|start|stop|delete|clean}"
     exit 1
 esac
 
