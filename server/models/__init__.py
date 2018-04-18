@@ -4,5 +4,5 @@ db = SQLAlchemy()
 
 from .user import User
 from .tag import Tag
-from .record import Record
+from .post import Post, PostUser, PostTag
 from .team import Team, UserTeam
