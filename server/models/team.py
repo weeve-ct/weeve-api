@@ -13,22 +13,6 @@ class Team(db.Model):
         secondary='user_team'
     )
 
-    def set_password(self, password):
-        '''hash via bcrypt and persist to user'''
-
-        self.hashed_password = bcrypt.hashpw(
-            password=password.encode('utf-8'),
-            salt=bcrypt.gensalt()
-        )
-
-    def check_password(self, password):
-        '''check password against hashed user pwd using bcrypt'''
-
-        return bcrypt.checkpw(
-            password=password.encode('utf-8'),
-            hashed_password=self.hashed_password
-        )
-
 class UserTeam(db.Model):
     __tablename__ = 'user_team'
 
