@@ -17,19 +17,24 @@ def get_tag(tag_id=None):
         tag = db.session.query(Tag).filter_by(id=tag_id).first()
         QueryError.raise_assert(tag is not None, 'tag_id <{}> not found'.format(tag_id))
 
-        return jsonify({'tag': {'tag_id': tag.id, 'tag': tag.tag}})
+        return jsonify({'tag': tag.tag})
 
+    # multiple tags
     q = db.session.query(Tag)
 
-    if request.args and 'startswith' in request.args:
-        pass
+    # apply "startswith" filter if passed via request args
+    for k in request.args.keys():
+        logger.debug('received "{}" arg'.format(k))
+        if k == 'startswith':
+            QueryError.raise_assert(len(request.args.getlist(k))<=1, 'can only specify startswith arg once')
+            tag_prefix = request.args.get(k)
+            q = q.filter(db.func.lower(Tag.tag).startswith(tag_prefix))
+            logger.debug('filter tags starting with "{}"'.format(tag_prefix))
+        else:
+            logger.debug('no handler for arg "{}"'.format(k))
 
     tags = q.all()
-
-    output = []
-    for tag in tags:
-        output.append({'tag_id': tag.id, 'tag': tag.tag})
-
+    output = [tag.tag for tag in tags]
     return jsonify({'tags': output})
 
 @bp.route('/', methods=['POST'])
