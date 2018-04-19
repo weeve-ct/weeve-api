@@ -16,4 +16,4 @@ def get_insensitive_unique(*args):
     return list(unique.values())
 
 def clean_whitespace(value):
-    return re.sub(r's+', ' ', value.strip())
+    return re.sub(r'\s+', ' ', value.strip())
