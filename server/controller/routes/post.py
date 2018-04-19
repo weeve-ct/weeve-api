@@ -1,6 +1,7 @@
 import logging
 from flask import request, jsonify
-from server.models import db, Post, Tag, User
+from itertools import chain
+from server.models import db, Post, Tag, User, PostTag
 from server.controller.security import SecureBlueprint
 from server.controller.errors import ValidationError, QueryError, NotImplementedError
 from server.controller.tokenizer import title_tokenizer, get_insensitive_unique, clean_whitespace
@@ -23,10 +24,16 @@ def get_post(post_id=None):
             'title': post.title,
             'body': post.body,
             'collaborators': [],
-            'tags': []
+            'explicit_tags': [],
+            'implicit_tags': [],
         }
 
-        output['tags'] = [tag.tag for tag in post.tags]
+        for post_tag in post.post_tags:
+            if post_tag.is_explicit:
+                output['explicit_tags'].append(post_tag.tag.tag)
+            else:
+                output['implicit_tags'].append(post_tag.tag.tag)
+
 
         for user in post.collaborators:
             output['collaborators'].append(
@@ -41,6 +48,7 @@ def get_post(post_id=None):
     else:
         raise NotImplementedError('GET for multiple posts not implemented yet')
 
+
 @bp.route('/', methods=['POST'])
 def create_post():
 
@@ -50,7 +58,7 @@ def create_post():
 
     # validate payload
     assert payload is not None, 'missing json body'
-    for required_field in ['title','body','collaborators','tags']:
+    for required_field in ['title','body','collaborators','explicit_tags']:
         ValidationError.raise_assert(
             bool=required_field in payload,
             msg='"{}" required'.format(required_field)
@@ -66,19 +74,25 @@ def create_post():
 
     logger.debug('process tags')
 
-    # get tags
-    tag_names = list(map(clean_whitespace, payload['tags']))
+    # get implicit tags
+    explicit_tag_names = map(clean_whitespace, payload['explicit_tags'])
+    explicit_tag_names = map(lambda x: (x, True), explicit_tag_names)
 
-    # add title tags
-    title_tags = title_tokenizer(post.title)
+    # compute implicit tags from title
+    implicit_tag_names = map(clean_whitespace, title_tokenizer(post.title))
+    implicit_tag_names = map(lambda x: (x, False), implicit_tag_names)
 
-    # remove extra white space characters
-    unique_tag_names = get_insensitive_unique(tag_names, title_tags)
+    known_tags = set()
 
     logger.debug('get/create tag objects')
+    for (tag_name, is_explicit) in chain(explicit_tag_names, implicit_tag_names):
+        tag_key = tag_name.strip().lower()
 
-    # get/create tags in db
-    for tag_name in unique_tag_names:
+        if tag_key in known_tags:
+            continue
+
+        known_tags.add(tag_key)
+
         tag = db.session.query(Tag).filter(db.func.lower(Tag.tag)==db.func.lower(tag_name)).first()
 
         # allow on-the-fly tag creation
@@ -86,12 +100,13 @@ def create_post():
             tag = Tag(tag=tag_name)
             db.session.add(tag)
 
-        post.tags.append(tag)
-
-    logger.debug('get collaborators')
+        post_tag = PostTag(is_explicit=is_explicit)
+        post_tag.tag = tag
+        post.post_tags.append(post_tag)
 
     # add collaborators
     # TODO: allow mixed types (users & teams)
+    logger.debug('get collaborators')
     for user_id in payload['collaborators']:
         user = db.session.query(User).filter_by(id=user_id).first()
         QueryError.raise_assert(user is not None, 'user "{}" not found'.format(user_id))
@@ -106,9 +121,16 @@ def create_post():
         'post_id': post.id,
         'title': post.title,
         'body': post.body,
-        'tags': [tag.tag for tag in post.tags],
+        'explicit_tags': [],
+        'implicit_tags': [],
         'collaborators': [user.id for user in post.collaborators]
     }
+
+    for post_tag in post.post_tags:
+        if post_tag.is_explicit:
+            output['explicit_tags'].append(post_tag.tag.tag)
+        else:
+            output['implicit_tags'].append(post_tag.tag.tag)
 
     return jsonify({'post':output}), 201
 

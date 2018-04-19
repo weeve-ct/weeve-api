@@ -3,7 +3,7 @@ import re
 def title_tokenizer(title):
     '''given title, return tokenized tags'''
     # naive split for now
-    return clean_whitespace(title).split(' ')
+    return list(set(clean_whitespace(title).split(' ')))
 
 def get_insensitive_unique(*args):
     '''given N lists, return the case insensitive unique list'''
