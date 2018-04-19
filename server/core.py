@@ -58,18 +58,20 @@ def configure_flask(app):
     app.config['APP_START_TIME'] = time.time()
     app.config['SECRET_KEY'] = conf_obj['secret_key']
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+    app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600 # reset db connections after an hour
     app.config['EXTERNAL_URL'] = conf_obj['external_url']
     app.config['SQLALCHEMY_DATABASE_URI'] = conf_obj['db']['url']
 
 
 def configure_logging(debug=False):
-    root = logging.getLogger()
     h = logging.StreamHandler()
     fmt = logging.Formatter(
         fmt='%(asctime)s %(levelname)s (%(name)s) %(message)s',
         datefmt='%Y-%m-%dT%H:%M:%S'
     )
     h.setFormatter(fmt)
+
+    root = logging.getLogger()
     root.addHandler(h)
 
     if debug:
