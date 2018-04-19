@@ -10,7 +10,7 @@ def get_insensitive_unique(*args):
     unique = {}
 
     for array in args:
-        assert isinstance(array, (list, tuple)), 'function requires list or tuple'
+        assert isinstance(array, (list, tuple, set)), 'function requires list or tuple'
         unique.update({val.lower(): val for val in array})
 
     return list(unique.values())
