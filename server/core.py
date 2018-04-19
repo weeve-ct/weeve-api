@@ -37,6 +37,7 @@ def create_app(debug=False, raise_errors=False):
     app.register_blueprint(routes.auth.bp, url_prefix='/auth')
     app.register_blueprint(routes.team.bp, url_prefix='/team')
     app.register_blueprint(routes.tag.bp, url_prefix='/tag')
+    app.register_blueprint(routes.post.bp, url_prefix='/post')
 
     return app
 
