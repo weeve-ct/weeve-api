@@ -41,7 +41,6 @@ case "$1" in
     docker rmi $DB_IMG_NAME
     ;;
 
-
   *)
     echo "Usage: "$1" {build|start|stop|delete|clean}"
     exit 1
