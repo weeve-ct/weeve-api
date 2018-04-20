@@ -53,3 +53,13 @@ def edit_user(user_id):
         'picture': user.picture,
     }
     return jsonify({'user': output})
+
+@bp.route('/<int:user_id>/picture/', methods=['GET']):
+def get_user_picture(user_id):
+    '''get user picture'''
+    raise NotImplementedError()
+
+@bp.route('/<int:user_id>/picture/', methods=['PUT']):
+def set_user_picture(user_id):
+    '''set user picture'''
+    raise NotImplementedError()
