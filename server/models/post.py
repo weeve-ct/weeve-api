@@ -13,7 +13,6 @@ class Post(db.Model):
     collaborators = db.relationship('User', secondary='post_user')
     upvotes = db.relationship('User', secondary='post_upvote_user')
 
-
 class PostUser(db.Model):
     __tablename__ = 'post_user'
 
@@ -23,7 +22,6 @@ class PostUser(db.Model):
     # relationships
     user = db.relationship('User', cascade="save-update, merge, delete")
     post = db.relationship('Post', cascade="save-update, merge, delete")
-
 
 class PostTag(db.Model):
     # http://docs.sqlalchemy.org/en/latest/orm/basic_relationships.html#association-object
