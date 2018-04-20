@@ -21,6 +21,7 @@ def get_post(post_id=None):
         output = {
             'post_id': post.id,
             'created_date': post.created_date,
+            'modified_date': post.modified_date,
             'title': post.title,
             'body': post.body,
             'collaborators': [user.id for user in post.collaborators],
