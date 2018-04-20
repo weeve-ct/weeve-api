@@ -1,8 +1,8 @@
+import logging
 from flask import request, jsonify
 from server.models import db, Tag
 from server.controller.security import SecureBlueprint
 from server.controller.errors import ValidationError, QueryError
-import logging
 
 logger = logging.getLogger(__name__)
 bp = SecureBlueprint('tag', __name__)
