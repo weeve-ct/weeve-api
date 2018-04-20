@@ -1,5 +1,5 @@
 import logging
-from flask import request, jsonify
+from flask import request, jsonify, g
 from itertools import chain
 from server.models import db, Post, Tag, User, PostTag
 from server.controller.security import SecureBlueprint
@@ -144,8 +144,28 @@ def edit_post(post_id=None):
 
 @bp.route('/<int:post_id>/upvote/', methods=['POST','PUT'])
 def create_post_upvote(post_id):
-    raise NotImplementedError()
+
+    post = db.session.query(Post).filter_by(id=post_id).first()
+    QueryError.raise_assert(post is not None, 'post "{}" not found'.format(post_id))
+
+    if g.current_user not in post.upvotes:
+        post.upvotes.append(g.current_user)
+        db.session.add(post)
+        db.session.commit()
+        logger.debug('user "{}" upvoted post "{}"'.format(g.current_user.id, post.id))
+
+    return jsonify({'code': 'success'})
+
 
 @bp.route('/<int:post_id>/upvote/', methods=['DELETE'])
 def delete_post_upvote(post_id):
-    raise NotImplementedError()
+    post = db.session.query(Post).filter_by(id=post_id).first()
+    QueryError.raise_assert(post is not None, 'post "{}" not found'.format(post_id))
+
+    if g.current_user in post.upvotes:
+        post.upvotes.remove(g.current_user)
+        db.session.add(post)
+        db.session.commit()
+        logger.debug('user "{}" delete upvote post "{}"'.format(g.current_user.id, post.id))
+
+    return jsonify({'code': 'success'})
