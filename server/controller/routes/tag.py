@@ -5,7 +5,6 @@ from server.controller.errors import ValidationError, QueryError
 import logging
 
 logger = logging.getLogger(__name__)
-
 bp = SecureBlueprint('tag', __name__)
 
 @bp.route('/', methods=['GET'])
