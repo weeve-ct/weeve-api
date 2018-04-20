@@ -61,6 +61,7 @@ def configure_flask(app):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600 # reset db connections after an hour
     app.config['EXTERNAL_URL'] = conf_obj['external_url']
+    app.config['SERVER_NAME'] = conf_obj['external_url']
     app.config['SQLALCHEMY_DATABASE_URI'] = conf_obj['db']['url']
 
 
@@ -80,12 +81,14 @@ def configure_logging(debug=False):
     else:
         root.setLevel(logging.INFO)
 
-
-def create_tables():
+def get_rules():
     app = create_app()
     with app.app_context():
-        db.create_all()
-
+        endpoints = []
+        for rule in app.url_map.iter_rules():
+            endpoints.append(rule.rule)
+    endpoints.sort()
+    return endpoints
 
 def reset_db():
     app = create_app()

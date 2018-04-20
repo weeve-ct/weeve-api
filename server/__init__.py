@@ -1,1 +1,1 @@
-from .core import create_app, reset_db, create_tables
+from .core import create_app, reset_db, get_rules
