@@ -10,6 +10,7 @@ class User(db.Model):
     # is_verified = db.Column(db.Boolean, nullable=False, default=False)
     last_login_date = db.Column(db.DateTime, nullable=True)
     minimum_iat = db.Column(db.Numeric, nullable=False, default=time.time())
+    picture = db.Column(db.String(100), unique=False, nullalbe=True)
 
     # posts = db.relationship('Post')
     teams = db.relationship(
