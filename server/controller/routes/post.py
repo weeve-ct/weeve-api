@@ -127,10 +127,18 @@ def create_post():
 
     return jsonify({'post':output}), 201
 
-@bp.route('/', methods=['PUT', 'PATCH'])
 @bp.route('/<int:post_id>', methods=['PUT', 'PATCH'])
 def edit_post(post_id=None):
     raise NotImplementedError()
+
+    post = db.session.query(Post).filter_by(id=post_id).first()
+    QueryError.raise_assert(post is not None, 'post "{}" not found'.format(post_id))
+
+    post.modified_date = datetime.datetime.now()
+
+    db.session.add(post)
+    db.session.commit()
+
 
 @bp.route('/<int:post_id>/upvote/', methods=['POST','PUT'])
 def create_post_upvote(post_id):
