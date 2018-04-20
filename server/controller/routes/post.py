@@ -113,6 +113,8 @@ def create_post():
         'post_id': post.id,
         'title': post.title,
         'body': post.body,
+        'created_date': post.created_date,
+        'modified_date': post.modified_date,
         'explicit_tags': [],
         'implicit_tags': [],
         'collaborators': [user.id for user in post.collaborators],
