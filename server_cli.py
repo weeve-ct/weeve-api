@@ -5,6 +5,7 @@ import server
 
 def cli():
     p = argparse.ArgumentParser()
+
     p.add_argument('-c', help='set config environment', dest='config')
 
     s = p.add_subparsers(dest='which')
@@ -17,7 +18,7 @@ def cli():
     sp = s.add_parser('reset', help='reset db')
     sp.add_argument('--reset', help='reset db', dest='reset', action='store_true')
 
-    sp = s.add_parser('routes', help='reset db')
+    sp = s.add_parser('routes', help='list routes')
 
     args = p.parse_args()
 
