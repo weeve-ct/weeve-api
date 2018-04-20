@@ -5,6 +5,9 @@ def title_tokenizer(title):
     # naive split for now
     return list(set(clean_whitespace(title).split(' ')))
 
+def clean_whitespace(value):
+    return re.sub(r'\s+', ' ', value.strip())
+
 def get_insensitive_unique(*args):
     '''given N lists, return the case insensitive unique list'''
     unique = {}
@@ -14,6 +17,3 @@ def get_insensitive_unique(*args):
         unique.update({val.lower(): val for val in array})
 
     return list(unique.values())
-
-def clean_whitespace(value):
-    return re.sub(r'\s+', ' ', value.strip())
