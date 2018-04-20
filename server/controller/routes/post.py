@@ -26,6 +26,7 @@ def get_post(post_id=None):
             'collaborators': [],
             'explicit_tags': [],
             'implicit_tags': [],
+            'upvotes': [u.id for u in post.upvotes]
         }
 
         for post_tag in post.post_tags:
@@ -123,7 +124,8 @@ def create_post():
         'body': post.body,
         'explicit_tags': [],
         'implicit_tags': [],
-        'collaborators': [user.id for user in post.collaborators]
+        'collaborators': [user.id for user in post.collaborators],
+        'upvotes': [user.id for user in post.upvotes],
     }
 
     for post_tag in post.post_tags:
@@ -134,6 +136,15 @@ def create_post():
 
     return jsonify({'post':output}), 201
 
+@bp.route('/', methods=['PUT', 'PATCH'])
 @bp.route('/<int:post_id>', methods=['PUT', 'PATCH'])
-def edit_post(post_id):
-    pass
+def edit_post(post_id=None):
+    raise NotImplementedError()
+
+@bp.route('/<int:post_id>/upvote/', methods=['POST','PUT'])
+def create_post_upvote(post_id):
+    raise NotImplementedError()
+
+@bp.route('/<int:post_id>/upvote/', methods=['DELETE'])
+def delete_post_upvote(post_id):
+    raise NotImplementedError()

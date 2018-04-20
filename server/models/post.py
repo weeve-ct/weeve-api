@@ -11,6 +11,7 @@ class Post(db.Model):
 
     post_tags = db.relationship('PostTag')
     collaborators = db.relationship('User', secondary='post_user')
+    upvotes = db.relationship('User', secondary='post_upvote_user')
 
 
 class PostUser(db.Model):
@@ -34,3 +35,12 @@ class PostTag(db.Model):
 
     post = db.relationship('Post', cascade="save-update, merge, delete")
     tag = db.relationship('Tag', cascade="save-update, merge, delete")
+
+class PostUpvoteUser(db.Model):
+    __tablename__ = 'post_upvote_user'
+
+    post_id = db.Column(db.Integer, db.ForeignKey('posts.id'), primary_key=True)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), primary_key=True)
+
+    post = db.relationship('Post', cascade="save-update, merge, delete")
+    user = db.relationship('User', cascade="save-update, merge, delete")
