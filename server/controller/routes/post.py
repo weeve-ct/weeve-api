@@ -23,10 +23,10 @@ def get_post(post_id=None):
             'created_date': post.created_date,
             'title': post.title,
             'body': post.body,
-            'collaborators': [],
+            'collaborators': [user.id for user in post.collaborators],
+            'upvotes': [user.id for user in post.upvotes],
             'explicit_tags': [],
             'implicit_tags': [],
-            'upvotes': [u.id for u in post.upvotes]
         }
 
         for post_tag in post.post_tags:
@@ -34,16 +34,6 @@ def get_post(post_id=None):
                 output['explicit_tags'].append(post_tag.tag.tag)
             else:
                 output['implicit_tags'].append(post_tag.tag.tag)
-
-
-        for user in post.collaborators:
-            output['collaborators'].append(
-                {
-                    'user_id': user.id,
-                    'username': user.username,
-                    'display_name': user.display_name,
-                }
-            )
 
         return jsonify({'post': output})
     else:
