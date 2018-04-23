@@ -22,6 +22,8 @@ def make_boolean(value):
         value = value.strip().lower()
         if value in ('true','false'):
             return value == 'true'
+        if value in ('1','0'):
+            return value == '1'
 
     raise errors.ValidationError('could not parse boolean "{}"'.format(value))
 

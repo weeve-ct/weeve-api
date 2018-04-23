@@ -9,12 +9,12 @@ logger = logging.getLogger(__name__)
 bp = SecureBlueprint('tag', __name__)
 
 @bp.route('/', methods=['GET'])
-@bp.route('/<id>', methods=['GET'])
-def get_tag(tag_id=None):
+@bp.route('/<tag_name>', methods=['GET'])
+def get_tag(tag_name=None):
 
     # single tag
-    if tag_id is not None:
-        tag = db.session.query(Tag).filter_by(id=tag_id).first()
+    if tag_name is not None:
+        tag = db.session.query(Tag).filter(db.func.lower(Tag.tag)==db.func.lower(tag_name)).first()
         QueryError.raise_assert(tag is not None, 'tag_id <{}> not found'.format(tag_id))
 
         return jsonify({'tag': tag.tag})
@@ -31,8 +31,8 @@ def get_tag(tag_id=None):
 
     # handle "implicit" filter
     QueryError.raise_assert(len(request.args.getlist('implicit'))<=1, 'can only specify implicit arg once')
-    include_implicit = helpers.make_boolean(request.args.get('implicit').lower())
-    if helpers.make_boolean(request.args.get('implicit').lower()):
+    include_implicit = helpers.make_boolean(request.args.get('implicit',"false"))
+    if not helpers.make_boolean(include_implicit):
         # filter out implicit tags
         q = q.filter(Tag.has_explicit == True)
 
