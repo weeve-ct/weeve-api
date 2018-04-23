@@ -7,7 +7,7 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     created_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
     modified_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
-    title = db.Column(db.String(30), primary_key=False, unique=False, nullable=False)
+    title = db.Column(db.String(130), primary_key=False, unique=False, nullable=False)
     body = db.Column(db.Text, primary_key=False, unique=False, nullable=False)
 
     post_tags = db.relationship('PostTag')
