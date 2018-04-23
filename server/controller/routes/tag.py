@@ -15,7 +15,7 @@ def get_tag(tag_name=None):
     # single tag
     if tag_name is not None:
         tag = db.session.query(Tag).filter(db.func.lower(Tag.tag)==db.func.lower(tag_name)).first()
-        QueryError.raise_assert(tag is not None, 'tag_id <{}> not found'.format(tag_id))
+        QueryError.raise_assert(tag is not None, 'tag <{}> not found'.format(tag_name))
 
         return jsonify({'tag': tag.tag})
 
