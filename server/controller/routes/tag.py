@@ -22,6 +22,8 @@ def get_tag(tag_name=None):
     # multiple tags
     q = db.session.query(Tag)
 
+    logger.debug('received args {}'.format(str(list(request.args.keys()))))
+
     # apply "startswith" filter if passed via request args
     if 'startswith' in request.args.keys():
         QueryError.raise_assert(len(request.args.getlist('startswith'))<=1, 'can only specify startswith arg once')
@@ -35,6 +37,7 @@ def get_tag(tag_name=None):
     if not helpers.make_boolean(include_implicit):
         # filter out implicit tags
         q = q.filter(Tag.has_explicit == True)
+        logger.debug('filter to only explicit tags')
 
     tags = q.all()
     output = [tag.tag for tag in tags]
