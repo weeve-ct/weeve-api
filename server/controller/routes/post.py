@@ -89,8 +89,12 @@ def create_post():
 
         # allow on-the-fly tag creation
         if tag is None:
-            tag = Tag(tag=tag_name)
+            tag = Tag(tag=tag_name, has_explicit=is_explicit)
             db.session.add(tag)
+        else:
+            if is_explicit and tag.has_explicit==False:
+                tag.has_explicit = True
+                db.session.add(tag)
 
         post_tag = PostTag(is_explicit=is_explicit)
         post_tag.tag = tag
