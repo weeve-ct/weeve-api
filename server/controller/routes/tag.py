@@ -1,6 +1,7 @@
 import logging
 from flask import request, jsonify
 from server.models import db, Tag
+from server.controller import helpers
 from server.controller.security import SecureBlueprint
 from server.controller.errors import ValidationError, QueryError
 
@@ -22,15 +23,18 @@ def get_tag(tag_id=None):
     q = db.session.query(Tag)
 
     # apply "startswith" filter if passed via request args
-    for k in request.args.keys():
-        logger.debug('received "{}" arg'.format(k))
-        if k == 'startswith':
-            QueryError.raise_assert(len(request.args.getlist(k))<=1, 'can only specify startswith arg once')
-            tag_prefix = request.args.get(k)
-            q = q.filter(db.func.lower(Tag.tag).startswith(tag_prefix))
-            logger.debug('filter tags starting with "{}"'.format(tag_prefix))
-        else:
-            logger.debug('no handler for arg "{}"'.format(k))
+    if 'startswith' in request.args.keys():
+        QueryError.raise_assert(len(request.args.getlist('startswith'))<=1, 'can only specify startswith arg once')
+        tag_prefix = request.args.get('startswith')
+        q = q.filter(db.func.lower(Tag.tag).startswith(tag_prefix))
+        logger.debug('filter tags starting with "{}"'.format(tag_prefix))
+
+    # handle "implicit" filter
+    QueryError.raise_assert(len(request.args.getlist('implicit'))<=1, 'can only specify implicit arg once')
+    include_implicit = helpers.make_boolean(request.args.get('implicit').lower())
+    if helpers.make_boolean(request.args.get('implicit').lower()):
+        # filter out implicit tags
+        q = q.filter(Tag.has_explicit == True)
 
     tags = q.all()
     output = [tag.tag for tag in tags]
