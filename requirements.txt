@@ -9,6 +9,7 @@ idna==2.6
 itsdangerous==0.24
 Jinja2==2.10
 MarkupSafe==1.0
+nltk==3.2.5
 pyaml==17.12.1
 pycparser==2.18
 PyJWT==1.6.1
