@@ -11,8 +11,7 @@ for word in nltk.corpus.stopwords.words('english'):
 STOPWORDS.add("'s")
 
 # build lemmatizer
-_LEMMATIZER = nltk.stem.WordNetLemmatizer()
-lemmatize = _LEMMATIZER.lemmatize
+LEMMATIZER = nltk.stem.WordNetLemmatizer()
 
 def title_tokenizer(title):
     '''given title, return tokenized tags'''
@@ -50,7 +49,7 @@ def get_tokens(sentence, stopwords):
 
         # stem verbs
         if pos.startswith('VB'):
-            tmp['output'] = lemmatize(word.lower(), pos='v')
+            tmp['output'] = LEMMATIZER.lemmatize(word.lower(), pos='v')
 
         # add to output
         output.append(tmp)
