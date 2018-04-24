@@ -13,7 +13,14 @@ class SecureBlueprint(Blueprint):
     '''subclass of flask Blueprint that enforces auth on all routes'''
     def __init__(self, *args, **kwargs):
         Blueprint.__init__(self,  *args, **kwargs)
+        self.before_request(options_response)
         self.before_request(set_token_user)
+
+def options_response():
+    if request.method == 'OPTIONS':
+        logger.info('responding to OPTIONS request')
+        resp = current_app.make_default_options_response()
+        return resp
 
 def decode_token(token):
     app = current_app
