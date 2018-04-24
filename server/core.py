@@ -42,7 +42,7 @@ def create_app(debug=False, raise_errors=False):
     app.register_blueprint(routes.post.bp, url_prefix='/post')
 
     # Configure CORS
-    CORS(app, origins=['*'], resources={r"/*": {"origins": "*"})
+    CORS(app,origins=['*'])
 
     return app
 
