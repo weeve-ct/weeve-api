@@ -20,19 +20,21 @@ def login():
     if 'username' not in body or 'password' not in body:
         raise errors.APIError('username and password required')
 
-    u = db.session.query(User).filter_by(username=body['username']).first()
+    username = body['username'].lower().strip()
+    query = db.session.query(User).filter(db.func.lower(User.username)==username)
+    user = query.first()
 
-    errors.AuthError.raise_assert(u is not None) # check user exists
-    errors.AuthError.raise_assert(u.check_password(body['password'])) # check password
+    errors.AuthError.raise_assert(user is not None) # check user exists
+    errors.AuthError.raise_assert(user.check_password(body['password'])) # check password
     # errors.AuthError.raise_assert(u.is_verified, 'user not verified') # check verified
 
-    u.last_login_date = datetime.datetime.now()
-    db.session.add(u)
+    user.last_login_date = datetime.datetime.now()
+    db.session.add(user)
     db.session.commit()
 
     # return session jwt
     token = security.make_expiring_jwt(
-        payload={'username': u.username},
+        payload={'username': user.username},
         exp=current_app.config['AUTH_TOKEN_EXP'],
     )
 
