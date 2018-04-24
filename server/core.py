@@ -67,6 +67,7 @@ def configure_flask(app):
     app.config['EXTERNAL_URL'] = conf_obj['external_url']
     # app.config['SERVER_NAME'] = conf_obj['external_url']
     app.config['SQLALCHEMY_DATABASE_URI'] = conf_obj['db']['url']
+    app.config['JSONIFY_PRETTYPRINT_REGULAR'] = False
 
 
 def configure_logging(debug=False):
