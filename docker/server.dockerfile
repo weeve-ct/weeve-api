@@ -4,7 +4,7 @@ RUN echo "nameserver 8.8.8.8" >> /etc/resolv.conf
 
 # get python3
 RUN apt-get -qq update
-RUN apt-get install -y software-properties-common > /dev/null
+RUN apt-get -qq install -y software-properties-common
 RUN add-apt-repository ppa:jonathonf/python-3.6 > /dev/null
 RUN apt-get -qq update
 
@@ -31,8 +31,12 @@ RUN pip install -q --no-cache-dir -r requirements.txt
 COPY server ./server
 COPY server_cli.py ./
 
+# install nltk data
 RUN python ./server_cli.py nltk -i
 
-ENV FUNNEL_API_CONFIG "/secrets/api-config.yaml"
+RUN mkdir /secrets
 
-CMD gunicorn -w 3 -b 0.0.0.0:8080 'rpt_api:create_app()'
+# set production config path
+ENV FLASK_CONFIG "/secrets/server-config.yaml"
+
+CMD gunicorn -w 3 -b 0.0.0.0:8080 'server:create_app()'
