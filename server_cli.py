@@ -1,7 +1,6 @@
 #!/usr/bin/env python
 import argparse
 import os
-import server
 
 def cli():
     p = argparse.ArgumentParser()
@@ -15,10 +14,13 @@ def cli():
     sp.add_argument('-p', help='port', dest='port', default=8080)
     sp.add_argument('-r','--raise', help='raise errors', dest='raise_errors', action='store_true')
 
-    sp = s.add_parser('reset', help='reset db')
+    sp = s.add_parser('db', help='db commands')
     sp.add_argument('--reset', help='reset db', dest='reset', action='store_true')
 
     sp = s.add_parser('routes', help='list routes')
+
+    sp = s.add_parser('nltk', help='nltk setup')
+    sp.add_argument('-i', '--install', help='install nltk dependencies', dest='nltk_install', action='store_true')
 
     args = p.parse_args()
 
@@ -31,15 +33,27 @@ def cli():
     os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
 
     if args.which == 'reset':
-        server.reset_db()
+        if args.reset:
+            import server
+            server.reset_db()
 
     elif args.which == 'run':
+        import server
         app = server.create_app(debug=args.debug, raise_errors=args.raise_errors)
         app.run(port=int(args.port))
 
     elif args.which == 'routes':
+        import server
         for route in server.get_rules():
             print(route)
+
+    elif args.which == 'nltk':
+        if args.nltk_install:
+            import nltk
+            nltk.download('stopwords')
+            nltk.download('punkt')
+            nltk.download('averaged_perceptron_tagger')
+            nltk.download('wordnet')
 
 if __name__ == '__main__':
     cli()
