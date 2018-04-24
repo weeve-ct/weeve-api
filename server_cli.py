@@ -32,7 +32,7 @@ def cli():
 
     os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
 
-    if args.which == 'reset':
+    if args.which == 'db':
         if args.reset:
             import server
             server.reset_db()
