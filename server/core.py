@@ -65,7 +65,7 @@ def configure_flask(app):
     app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
     app.config['SQLALCHEMY_POOL_RECYCLE'] = 3600 # reset db connections after an hour
     app.config['EXTERNAL_URL'] = conf_obj['external_url']
-    app.config['SERVER_NAME'] = conf_obj['external_url']
+    # app.config['SERVER_NAME'] = conf_obj['external_url']
     app.config['SQLALCHEMY_DATABASE_URI'] = conf_obj['db']['url']
 
 
