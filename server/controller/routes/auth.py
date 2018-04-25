@@ -70,9 +70,12 @@ def signup():
     logger.debug('setting password')
     user.set_password(body['password'])
 
-    logger.debug('writing to db')
-    db.session.add(user)
-    db.session.commit()
+    try:
+        logger.debug('writing to db')
+        db.session.add(user)
+        db.session.commit()
+    except:
+        raise errors.APIError('database failure')
 
     return jsonify({'code': 'success'})
 
