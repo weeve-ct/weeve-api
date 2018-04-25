@@ -18,7 +18,7 @@ class SecureBlueprint(Blueprint):
 
 def options_response():
     if request.method == 'OPTIONS':
-        logger.info('responding to OPTIONS request')
+        logger.debug('responding to OPTIONS request')
         resp = current_app.make_default_options_response()
         return resp
 
