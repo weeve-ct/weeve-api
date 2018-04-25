@@ -84,7 +84,7 @@ def verify(token):
 
     return jsonify({'message': 'success'})
 
-@bp.route('/check_token')
+@bp.route('/check_token', methods=['GET','POST'])
 @security.requires_auth
 def check_token():
     '''check token sent as a auth header'''
