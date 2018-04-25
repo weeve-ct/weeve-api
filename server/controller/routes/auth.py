@@ -12,8 +12,8 @@ logger = logging.getLogger(__name__)
 
 @bp.route('/login', methods=['POST'])
 def login():
-    logger.info('logging in')
-
+    logger.debug('logging in')
+    logger.debug('validating request body')
     body = request.json
     assert body is not None, 'json missing'
 
@@ -21,17 +21,22 @@ def login():
         raise errors.APIError('username and password required')
 
     username = body['username'].lower().strip()
+    logger.debug('searching for user "{}"'.format(username))
     query = db.session.query(User).filter(db.func.lower(User.username)==username)
     user = query.first()
 
     errors.AuthError.raise_assert(user is not None) # check user exists
+
+    logger.debug('checking password')
     errors.AuthError.raise_assert(user.check_password(body['password'])) # check password
     # errors.AuthError.raise_assert(u.is_verified, 'user not verified') # check verified
 
+    logger.debug('updating last_login_date')
     user.last_login_date = datetime.datetime.now()
     db.session.add(user)
     db.session.commit()
 
+    logger.debug('making token')
     # return session jwt
     token = security.make_expiring_jwt(
         payload={'username': user.username},
@@ -42,25 +47,31 @@ def login():
 
 @bp.route('/signup', methods=['POST'])
 def signup():
-    body = request.json
-    print(body)
+    logger.debug('begin user registration')
 
+    logger.debug('validating request body')
+    body = request.json
+    errors.ValidationError.raise_assert(body is not None, 'json missing')
     if 'username' not in body or 'password' not in body:
         raise errors.APIError('username and password required')
 
-    u = db.session.query(User).filter_by(username=body['username']).first()
+    username = body['username'].lower().strip()
+    logger.debug('searching for existing user "{}"'.format(username))
+    query = db.session.query(User).filter(db.func.lower(User.username)==username)
+    user = query.first()
+    errors.AuthError.raise_assert(user is None, 'user already exists')
 
-    if not u is None:
-        raise errors.AuthError('user already exists')
-
-    u = User(
-        username = body['username'],
-        display_name = (body.get('display_name') or body['username'])
+    logger.debug('creating new user')
+    user = User(
+        username = username,
+        display_name = (body.get('display_name') or username)
     )
 
-    u.set_password(body['password'])
+    logger.debug('setting password')
+    user.set_password(body['password'])
 
-    db.session.add(u)
+    logger.debug('writing to db')
+    db.session.add(user)
     db.session.commit()
 
     return jsonify({'code': 'success'})
