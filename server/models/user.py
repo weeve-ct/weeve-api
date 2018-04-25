@@ -9,7 +9,7 @@ class User(db.Model):
     hashed_password = db.Column(db.Binary(64), nullable=False)
     # is_verified = db.Column(db.Boolean, nullable=False, default=False)
     last_login_date = db.Column(db.DateTime, nullable=True)
-    minimum_iat = db.Column(db.Float, nullable=False, default=round(time.time(),3))
+    minimum_iat = db.Column(db.Integer, nullable=False, default=int(time.time()))
     picture = db.Column(db.String(100), unique=False, nullable=True)
 
     # posts = db.relationship('Post')
