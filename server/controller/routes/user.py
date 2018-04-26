@@ -22,6 +22,8 @@ def get_user(user_id=None):
         }
         return jsonify({'user': output})
 
+    raise NotImplementedError('Cannot query muliple users yet')
+
 @bp.route('/<int:user_id>', methods=['PUT', 'PATCH'])
 def edit_user(user_id):
     ValidationError.raise_assert(request.json, 'missing request json')
