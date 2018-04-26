@@ -22,7 +22,19 @@ def get_user(user_id=None):
         }
         return jsonify({'user': output})
 
-    raise NotImplementedError('Cannot query muliple users yet')
+    q = db.session.query(User)
+    # TODO: allow url args
+
+    output = []
+    for user in q.all():
+        output.append({
+            'user_id': user.id,
+            'username': user.username,
+            'display_name': user.display_name,
+            'picture': user.picture,
+        })
+
+    return jsonify({'users': output})
 
 @bp.route('/<int:user_id>', methods=['PUT', 'PATCH'])
 def edit_user(user_id):
