@@ -19,7 +19,7 @@ def title_tokenizer(title):
     tokens = get_tokens(title, STOPWORDS)
     return list(set(x['output'] for x in tokens if not x.get('ignore',False)))
 
-def get_tokens(sentence, stopwords):
+def get_tokens(sentence, stopwords=STOPWORDS):
     # identify POS
     output = []
     tokens = clean_whitespace(sentence)
