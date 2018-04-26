@@ -31,7 +31,8 @@ def handle_exception(err):
         resp = err.to_resp()
 
     else:
-        err = APIError(str(err))
+        logger.exception(err)
+        err = APIError()
         resp = err.to_resp()
         resp.status_code = 500
 
