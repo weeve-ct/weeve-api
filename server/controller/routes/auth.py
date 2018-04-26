@@ -57,6 +57,7 @@ def signup():
 
     username = body['username'].lower().strip()
     logger.debug('searching for existing user "{}"'.format(username))
+
     query = db.session.query(User).filter(db.func.lower(User.username)==username)
     user = query.first()
     errors.AuthError.raise_assert(user is None, 'user already exists')
@@ -70,12 +71,9 @@ def signup():
     logger.debug('setting password')
     user.set_password(body['password'])
 
-    try:
-        logger.debug('writing to db')
-        db.session.add(user)
-        db.session.commit()
-    except:
-        raise errors.APIError('database failure')
+    logger.debug('writing to db')
+    db.session.add(user)
+    db.session.commit()
 
     return jsonify({'code': 'success'})
 
