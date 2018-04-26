@@ -19,19 +19,6 @@ def title_tokenizer(title):
     tokens = get_tokens(title, STOPWORDS)
     return list(set(x['output'] for x in tokens if not x.get('ignore',False)))
 
-def clean_whitespace(value):
-    return re.sub(r'\s+', ' ', value.strip())
-
-def get_insensitive_unique(*args):
-    '''given N lists, return the case insensitive unique list'''
-    unique = {}
-
-    for array in args:
-        assert isinstance(array, (list, tuple, set)), 'function requires list or tuple'
-        unique.update({val.lower(): val for val in array})
-
-    return list(unique.values())
-
 def get_tokens(sentence, stopwords):
     # identify POS
     output = []
@@ -55,3 +42,16 @@ def get_tokens(sentence, stopwords):
         output.append(tmp)
 
     return output
+
+def clean_whitespace(value):
+    return re.sub(r'\s+', ' ', value.strip())
+
+def get_insensitive_unique(*args):
+    '''given N lists, return the case insensitive unique list'''
+    unique = {}
+
+    for array in args:
+        assert isinstance(array, (list, tuple, set)), 'function requires list or tuple'
+        unique.update({val.lower(): val for val in array})
+
+    return list(unique.values())
