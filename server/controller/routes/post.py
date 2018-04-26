@@ -108,6 +108,9 @@ def create_post():
         QueryError.raise_assert(user is not None, 'user "{}" not found'.format(user_id))
         post.collaborators.append(user)
 
+    if g.token_user not in post.collaborators:
+        post.collaborators.append(g.token_user)
+
     logger.debug('persist Post object to db')
 
     db.session.add(post)
