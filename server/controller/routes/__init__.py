@@ -4,3 +4,4 @@ from . import user
 from . import team
 from . import tag
 from . import post
+from . import search
