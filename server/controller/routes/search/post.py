@@ -4,9 +4,10 @@ from server.models import db, Post, Tag, User, PostTag, PostUser
 from server.controller.security import SecureBlueprint
 from server.controller.errors import *
 from server.controller.tokenizer import get_tokens
+from . import bp
 
 logger = logging.getLogger(__name__)
-bp = SecureBlueprint('search', __name__)
+
 
 @bp.route('/post/', methods=['POST'])
 def search():
