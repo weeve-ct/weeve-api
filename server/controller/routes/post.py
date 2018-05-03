@@ -109,7 +109,7 @@ def create_post():
         post.collaborators.append(user)
 
     if g.current_user not in post.collaborators:
-        post.collaborators.append(g.token_user)
+        post.collaborators.append(g.current_user)
 
     logger.debug('persist Post object to db')
 
