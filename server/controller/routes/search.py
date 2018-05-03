@@ -1,13 +1,13 @@
 import logging
 from flask import request, jsonify, g
 from server.models import db, Post, Tag, User, PostTag, PostUser
-from server.controller.security import SecureBlueprint
-from server.controller.errors import *
 from server.controller.tokenizer import get_tokens
-from . import bp
+from server.controller.errors import *
+from server.controller.security import SecureBlueprint
+
+bp = SecureBlueprint('search', __name__)
 
 logger = logging.getLogger(__name__)
-
 
 @bp.route('/post/', methods=['POST'])
 def search():
@@ -75,6 +75,8 @@ def search():
     logger.debug('found {} results'.format(len(results)))
 
     output = []
+    post_ids = []
+
     for r in results:
         post, count = r
         explicit_tags = [p.tag.tag.lower() for p in post.post_tags if p.tag.has_explicit==True]
@@ -93,10 +95,43 @@ def search():
 
         output.append((sort_key, output_record))
 
+        post_ids.append(post.id)
+
     logger.debug('black magic sorting')
     output.sort(key=lambda x: x[0], reverse=True)
     output = [o[1] for o in output]
 
-    return jsonify({'posts': output})
+    # identify experts
+    experts = []
+    if post_ids:
+        logger.debug('finding experts')
+        q = db.session.query(User, db.func.count(Post.id).label('post_count'))
+        q = q.select_from(User)
+        q = q.join(PostUser).join(Post)
+        q = q.filter(Post.id.in_(post_ids))
+        q = q.group_by(User)
+        q = q.order_by("post_count DESC")
+        results = q.all()
+
+        logger.debug('adding {} experts'.format(len(results)))
+
+        for (user, post_count) in results:
+            experts.append({
+                'user_id': user.id,
+                'username': user.username,
+                'display_name': user.display_name,
+                'picture': user.picture,
+                'post_count': post_count,
+            })
+
+    # identify other tags
+    other_tags = []
+
+
+    return jsonify({
+        'posts': output,
+        'experts': experts,
+        'tags': other_tags,
+    })
 
     # find the users
