@@ -101,7 +101,7 @@ def search():
     output.sort(key=lambda x: x[0], reverse=True)
     output = [o[1] for o in output]
 
-    # identify experts
+    # identify experts & other tags
     experts = []
     if post_ids:
         logger.debug('finding experts')
@@ -110,7 +110,7 @@ def search():
         q = q.join(PostUser).join(Post)
         q = q.filter(Post.id.in_(post_ids))
         q = q.group_by(User)
-        q = q.order_by("post_count DESC")
+        q = q.order_by(db.func.count(Post.id).desc())
         results = q.all()
 
         logger.debug('adding {} experts'.format(len(results)))
@@ -126,6 +126,29 @@ def search():
 
     # identify other tags
     other_tags = []
+    if post_ids:
+        logger.debug('finding related tags')
+        q = db.session.query()
+        q = q.add_column(Tag.tag)
+        q = q.add_column(db.func.count(Post.id).label('post_count'))
+        q = q.select_from(Tag)
+        q = q.join(PostTag).join(Post)
+        q = q.filter(Post.id.in_(post_ids))
+        q = q.filter(~Tag.tag.in_(search_tags))
+        q = q.filter(Tag.has_explicit==True)
+        q = q.group_by(Tag.tag)
+        q = q.order_by(db.func.count(Post.id).desc())
+
+        results = q.all()
+
+        logger.debug('found {} related tags'.format(len(results)))
+
+        for (tag, post_count) in results:
+            other_tags.append({
+                'tag': tag,
+                'post_count': post_count
+            })
+
 
 
     return jsonify({
@@ -133,5 +156,3 @@ def search():
         'experts': experts,
         'tags': other_tags,
     })
-
-    # find the users
