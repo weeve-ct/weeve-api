@@ -37,6 +37,6 @@ RUN python ./server_cli.py nltk -i
 RUN mkdir /secrets
 
 # set production config path
-ENV FLASK_CONFIG "/secrets/server-config.yaml"
+# ENV FLASK_CONFIG "/secrets/config/weeve-flask-config.yaml"
 
 CMD gunicorn -w 3 -b 0.0.0.0:8080 'server:create_app()'
