@@ -16,6 +16,7 @@ def cli():
 
     sp = s.add_parser('db', help='db commands')
     sp.add_argument('--reset', help='reset db', dest='reset', action='store_true')
+    sp.add_argument('--create', help='create db', dest='create', action='store_true')
 
     sp = s.add_parser('routes', help='list routes')
 
@@ -27,15 +28,19 @@ def cli():
     # setup environment
     if args.config:
         assert os.path.exists(args.config), 'bad config fp "{}"'.format(args.config)
+        os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
     else:
-        args.config = './local/server-config-dev.yaml'
-
-    os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
+        if 'FLASK_CONFIG' not in os.environ:
+            args.config = './local/server-config-dev.yaml'
+            os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
 
     if args.which == 'db':
         if args.reset:
             import server
             server.reset_db()
+        elif args.create:
+            import server 
+            server.create_db()
 
     elif args.which == 'run':
         import server

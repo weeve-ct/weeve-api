@@ -1,10 +1,11 @@
 #!/bin/sh
-VERSION=v0.7
-TAG_NAME=gcr.io/$PROJECT_ID/$IMG_NAME:$VERSION
+PROJECT_ID="$(gcloud config get-value project --quiet)"
+VERSION=latest
 DOCKER_FOLDER=./docker
 
 API_IMG_NAME=weeve-api
-API_TAG_NAME=gcr.io/$PROJECT_ID/$API_IMG_NAME:latest
+API_VERSION=latest
+API_TAG_NAME=gcr.io/$PROJECT_ID/$API_IMG_NAME:$API_VERSION
 API_CONTAINER_NAME=some-$API_IMG_NAME
 
 case "$1" in
@@ -21,6 +22,13 @@ case "$1" in
     docker build -t $API_IMG_NAME -f $DOCKER_FOLDER/server.dockerfile .
     echo "creating container"
     docker create -p 8080:8080 --name=$API_CONTAINER_NAME $API_IMG_NAME
+    ;;
+
+  push)
+    echo "pushing"
+    docker tag $API_IMG_NAME $API_TAG_NAME
+    gcloud docker -- push $API_TAG_NAME
+    docker rmi $API_TAG_NAME
     ;;
 
   cp)

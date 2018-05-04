@@ -103,3 +103,9 @@ def reset_db():
         db.drop_all()
         logger.info('creating tables')
         db.create_all()
+
+def create_db():
+    app = create_app()
+    with app.app_context():
+        logger.info('creating tables')
+        db.create_all()
