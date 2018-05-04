@@ -1,6 +1,7 @@
 import logging
 from flask import request, jsonify, g
 from itertools import chain
+import base64
 from server.models import db, Post, Tag, User, PostTag
 from server.controller.security import SecureBlueprint
 from server.controller.errors import ValidationError, QueryError, NotImplementedError
@@ -9,6 +10,14 @@ from server.controller.tokenizer import title_tokenizer, get_insensitive_unique,
 
 logger = logging.getLogger(__name__)
 bp = SecureBlueprint('post', __name__)
+
+def encode_body(body):
+    # return base64.b64encode(payload['body'].encode('utf-16')).decode('ascii')
+    return base64.b64encode(body.encode('utf-16'))
+
+def decode_body(body):
+    # return base64.b64decode(body.encode('ascii')).decode('utf-16')
+    return base64.b64decode(body).decode('utf-16')
 
 
 @bp.route('/', methods=['GET'])
@@ -23,7 +32,7 @@ def get_post(post_id=None):
             'created_date': post.created_date,
             'modified_date': post.modified_date,
             'title': post.title,
-            'body': post.body,
+            'body': decode_body(post.body),
             'collaborators': [user.id for user in post.collaborators],
             'upvotes': [user.id for user in post.upvotes],
             'explicit_tags': [],
@@ -61,7 +70,7 @@ def create_post():
     # init Post object
     post = Post(
         title=payload['title'],
-        body=payload['body']
+        body=encode_body(payload['body'])
     )
 
     logger.debug('process tags')
@@ -116,10 +125,12 @@ def create_post():
     db.session.add(post)
     db.session.commit()
 
+    logger.debug('created Post(id={})'.format(post.id))
+
     output = {
         'post_id': post.id,
         'title': post.title,
-        'body': post.body,
+        'body': decode_body(post.body),
         'created_date': post.created_date,
         'modified_date': post.modified_date,
         'explicit_tags': [],
@@ -133,6 +144,8 @@ def create_post():
             output['explicit_tags'].append(post_tag.tag.tag)
         else:
             output['implicit_tags'].append(post_tag.tag.tag)
+
+
 
     return jsonify({'post':output}), 201
 

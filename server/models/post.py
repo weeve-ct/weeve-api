@@ -7,8 +7,9 @@ class Post(db.Model):
     id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     created_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
     modified_date = db.Column(db.DateTime, nullable=False, default=datetime.datetime.now())
-    title = db.Column(db.String(130), primary_key=False, unique=False, nullable=False)
-    body = db.Column(db.Text, primary_key=False, unique=False, nullable=False)
+    title = db.Column(db.String(130),nullable=False)
+    # body = db.Column(db.Text(4294967295), nullable=False)
+    body = db.Column(db.LargeBinary(length=(2**32)-1), nullable=False)
 
     post_tags = db.relationship('PostTag')
     collaborators = db.relationship('User', secondary='post_user')
