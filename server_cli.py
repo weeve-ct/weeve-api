@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 import argparse
 import os
+import json
 
 def cli():
     p = argparse.ArgumentParser()
@@ -23,23 +24,24 @@ def cli():
     sp = s.add_parser('nltk', help='nltk setup')
     sp.add_argument('-i', '--install', help='install nltk dependencies', dest='nltk_install', action='store_true')
 
+    sp = s.add_parser('export', help='export posts')
+
     args = p.parse_args()
 
     # setup environment
     if args.config:
         assert os.path.exists(args.config), 'bad config fp "{}"'.format(args.config)
         os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
-    else:
-        if 'FLASK_CONFIG' not in os.environ:
-            args.config = './local/server-config-dev.yaml'
-            os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
+    elif not 'FLASK_CONFIG' in os.environ:
+        args.config = './local/server-config-dev.yaml'
+        os.environ['FLASK_CONFIG'] = os.path.abspath(args.config)
 
     if args.which == 'db':
         if args.reset:
             import server
             server.reset_db()
         elif args.create:
-            import server 
+            import server
             server.create_db()
 
     elif args.which == 'run':
@@ -59,6 +61,29 @@ def cli():
             nltk.download('punkt')
             nltk.download('averaged_perceptron_tagger')
             nltk.download('wordnet')
+
+    elif args.which == 'export':
+        import server
+        from server.models import db, Post
+        from server.controller.routes.post import encode_body, decode_body
+
+        app = server.create_app()
+        # db = server.models.db
+
+        output = []
+
+        with app.app_context():
+            posts = db.session.query(Post).all()
+
+            for post in posts:
+                output.append({
+                    'body': decode_body(post.body),
+                    'explicit_tags': [pt.tag.tag for pt in post.post_tags],
+                    'title': post.title,
+                })
+
+        with open('./sample-data/nuga.json','w') as f:
+            f.write(json.dumps(output))
 
 if __name__ == '__main__':
     cli()
