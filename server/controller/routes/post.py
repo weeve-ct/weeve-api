@@ -19,7 +19,6 @@ def decode_body(body):
     # return base64.b64decode(body.encode('ascii')).decode('utf-16')
     return base64.b64decode(body).decode('utf-16')
 
-
 @bp.route('/', methods=['GET'])
 @bp.route('/<int:post_id>', methods=['GET'])
 def get_post(post_id=None):
