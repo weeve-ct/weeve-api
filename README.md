@@ -1,9 +1,9 @@
-# genie-backend
-genie backend service
+# weeve-api
+weeve backend service
 
 Server cli:
 - Run dev server: `./server_cli.py run -d`
-- Reset db: `./server_cli.py reset`
+- Reset db: `./server_cli.py db --reset`
 - Print routes: `./server_cli.py routes`
 
 Running mysql locally:
